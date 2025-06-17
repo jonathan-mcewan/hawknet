@@ -53,7 +53,7 @@ namespace HawkNet.Owin
                     catch (SecurityException ex)
                     {
                         this.logger.WriteWarning("Unauthorized call. " + ex.Message);
-                        
+
                         return EmptyTicket();
                     }
                 }
@@ -69,7 +69,7 @@ namespace HawkNet.Owin
              if (authorization != null &&
                 !string.Equals(authorization.Scheme, HawkAuthenticationOptions.Scheme))
              {
-                 this.logger.WriteInformation(string.Format("Authorization skipped. Schema found {0}",
+                 this.logger.WriteVerbose(string.Format("Authorization skipped. Schema found {0}",
                          authorization.Scheme));
 
                  return EmptyTicket();
@@ -78,7 +78,7 @@ namespace HawkNet.Owin
             if (authorization == null ||
                 string.IsNullOrWhiteSpace(authorization.Scheme))
             {
-                this.logger.WriteWarning("Authorization header not found");
+                this.logger.WriteVerbose("Authorization header not found");
 
                 return EmptyTicket();
             }
@@ -87,14 +87,14 @@ namespace HawkNet.Owin
                 if (string.IsNullOrWhiteSpace(authorization.Parameter))
                 {
                     this.logger.WriteWarning("Invalid header format");
-                    
+
                     return EmptyTicket();
                 }
 
                 if (string.IsNullOrWhiteSpace(Request.Host.Value))
                 {
                     this.logger.WriteWarning("Missing Host header");
-                    
+
                     return EmptyTicket();
                 }
 
@@ -107,7 +107,7 @@ namespace HawkNet.Owin
                     Request.Body = requestBuffer;
 
                     var payload = Encoding.UTF8.GetString(requestBuffer.ToArray());
-                    
+
                     return payload;
                 });
 
@@ -204,7 +204,7 @@ namespace HawkNet.Owin
             var payload = Encoding.UTF8.GetString(((StreamWrapper)response.Body).ToArray());
 
             var hash = Hawk.CalculatePayloadHash(payload, mediaType, credential);
-            
+
             var mac = Hawk.CalculateMac(host,
                 method,
                 uri,
