@@ -363,7 +363,7 @@ namespace HawkNet
 
             ValidateCredentials(credential);
 
-            var mac = CalculateMac(uri.Host, "GET", RemoveBewitFromQuery(uri),
+            var mac = CalculateMac(host, "GET", RemoveBewitFromQuery(uri),
                 bewitParts[3], bewitParts[1], "", credential, "bewit");
 
             if (!IsEqual(mac, bewitParts[2]))
@@ -415,7 +415,7 @@ namespace HawkNet
 
             ValidateCredentials(credential);
 
-            var mac = CalculateMac(uri.Host, "GET", RemoveBewitFromQuery(uri),
+            var mac = CalculateMac(host, "GET", RemoveBewitFromQuery(uri),
                 bewitParts[3], bewitParts[1], "", credential, "bewit");
 
             if (!IsEqual(mac, bewitParts[2]))
