@@ -235,7 +235,12 @@ namespace HawkNet.Owin
             {
                 var forwarded = Request.Headers.Get("X-Forwarded-Host");
                 if (!string.IsNullOrWhiteSpace(forwarded))
-                    return forwarded;
+                {
+                    // Take first value — in chained proxies, leftmost is the original host
+                    var firstHost = forwarded.Split(',')[0].Trim();
+                    if (!string.IsNullOrWhiteSpace(firstHost))
+                        return firstHost;
+                }
             }
 
             return Request.Host.Value;
