@@ -40,7 +40,7 @@ namespace HawkNet.Owin
                     try
                     {
                         var principal = await Hawk.AuthenticateBewitAsync(query["bewit"],
-                            Request.Host.Value,
+                            ResolveHost(),
                             Request.Uri,
                             this.Options.Credentials);
 
@@ -91,7 +91,7 @@ namespace HawkNet.Owin
                     return EmptyTicket();
                 }
 
-                if (string.IsNullOrWhiteSpace(Request.Host.Value))
+                if (string.IsNullOrWhiteSpace(ResolveHost()))
                 {
                     this.logger.WriteWarning("Missing Host header");
 
@@ -114,7 +114,7 @@ namespace HawkNet.Owin
                 try
                 {
                     var principal = await Hawk.AuthenticateAsync(authorization.Parameter,
-                            Request.Host.Value,
+                            ResolveHost(),
                             Request.Method,
                             Request.Uri,
                             this.Options.Credentials,
@@ -157,7 +157,7 @@ namespace HawkNet.Owin
                         && authorization.Scheme.Equals(HawkAuthenticationOptions.Scheme, StringComparison.OrdinalIgnoreCase))
                     {
                         await AuthenticateResponse(authorization.Parameter,
-                                Request.Host.Value,
+                                ResolveHost(),
                                 Request.Method,
                                 Request.Uri,
                                 Response.ContentType,
@@ -227,6 +227,18 @@ namespace HawkNet.Owin
             var datetime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             datetime = datetime.AddSeconds(unixTimeStamp).ToLocalTime();
             return datetime;
+        }
+
+        private string ResolveHost()
+        {
+            if (Options.UseForwardedHost)
+            {
+                var forwarded = Request.Headers.Get("X-Forwarded-Host");
+                if (!string.IsNullOrWhiteSpace(forwarded))
+                    return forwarded;
+            }
+
+            return Request.Host.Value;
         }
 
         private static AuthenticationTicket EmptyTicket()

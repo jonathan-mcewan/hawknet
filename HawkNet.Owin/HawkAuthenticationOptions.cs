@@ -30,5 +30,11 @@ namespace HawkNet.Owin
             get;
             set;
         }
+
+        public bool UseForwardedHost
+        {
+            get;
+            set;
+        }
     }
 }
